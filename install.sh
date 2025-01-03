@@ -1,8 +1,9 @@
 #!/bin/bash
-# wget -O insstall.sh https://raw.githubusercontent.com/katy-the-kat/kvm-i7-scripts/refs/heads/main/install.sh && bash install.sh
+# wget -O install.sh https://raw.githubusercontent.com/katy-the-kat/kvm-i7-scripts/refs/heads/main/install.sh && bash install.sh
 
 apt update > /dev/null &
 apt full-upgrade > /dev/null &
+apt install curl -y
 
 clear
 cat > /etc/ssh/sshd_config << EOF
