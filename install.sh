@@ -1,4 +1,5 @@
 #!/bin/bash
+# wget -O insstall.sh https://raw.githubusercontent.com/katy-the-kat/kvm-i7-scripts/refs/heads/main/install.sh && bash install.sh
 
 apt update > /dev/null &
 apt full-upgrade > /dev/null &
@@ -27,3 +28,4 @@ UPLOAD_OUTPUT=$(curl -s bashupload.com -T /root/.ssh/private_key.pem)
 DOWNLOAD_LINK=$(echo "$UPLOAD_OUTPUT" | grep -o 'http://bashupload.com/[^ ]*')
 IP=$(hostname -i)
 echo -e "\nIP: $IP\nUser: root\nSSH Key Download: $DOWNLOAD_LINK"
+rm install.sh
