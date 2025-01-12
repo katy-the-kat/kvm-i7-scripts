@@ -17,7 +17,7 @@ DISK_SIZE = "4G"
 BRIDGE = "vmbr0"
 FILE_PATH = "/home/ssh/tokens.txt"
 NODE_DETAILS = {
-    "nl-1": {"ip": "localhost", "username": "root", "password": ""},
+    "nl-1": {"ip": "localhost", "username": "host", "password": ""},
 }
 
 intents = discord.Intents.all()
@@ -64,7 +64,7 @@ async def create_proxmox_vps_on_node(memory, cores, disk, customer_id, node):
     password = 'nopassword'
     memory_mb = memory * 1024
     creation_command = (
-        f"pct create {vps_id} {TEMPLATE} --net0 name=eth0,bridge={BRIDGE},firewall=1,ip=dhcp "
+        f"sudo pct create {vps_id} {TEMPLATE} --net0 name=eth0,bridge={BRIDGE},firewall=1,ip=dhcp "
         f"--hostname {vps_name} --storage local --rootfs local:{disk} --cores {cores} --memory {memory_mb} "
         f"--password {password} --unprivileged 1 --features nesting=1"
     )
