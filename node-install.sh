@@ -11,7 +11,6 @@ root    ALL=(ALL:ALL) ALL
 ssh ALL=(ALL) NOPASSWD: /usr/sbin/pct enter *
 @includedir /etc/sudoers.d
 ' > /etc/sudoers
-pip3 install discord paramiko docker requests --break-system-packages
 adduser ssh
 wget -O /usr/bin/nossh https://raw.githubusercontent.com/katy-the-kat/kvm-i7-scripts/refs/heads/main/nossh
 chmod +x /usr/bin/nossh
