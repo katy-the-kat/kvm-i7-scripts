@@ -1,6 +1,6 @@
 bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/misc/post-pve-install.sh)"
 apt update
-apt install figlet sudo -yr
+apt install figlet sudo -y
 rm /etc/sudoers
 echo '
 Defaults        env_reset
