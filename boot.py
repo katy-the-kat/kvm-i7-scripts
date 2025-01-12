@@ -68,7 +68,7 @@ async def create_proxmox_vps_on_node(memory, cores, disk, customer_id, node):
         f"--hostname {vps_name} --storage local --rootfs local:{disk} --cores {cores} --memory {memory_mb} "
         f"--password {password} --unprivileged 1 --features nesting=1"
     )
-    start_command = f"pct start {vps_id}"
+    start_command = f"sudo pct start {vps_id}"
     try:
         run_ssh_command(node, creation_command)
         run_ssh_command(node, start_command)
