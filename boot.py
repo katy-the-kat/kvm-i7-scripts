@@ -42,11 +42,16 @@ def send_webhook_log(title, description, color=0x3498db):
     }
     requests.post(WEBHOOK_URL, json=embed)
 
-def save_vps_details(token, vps_id, customer_id):
-    port = 22
-    entry = f"{token},{vps_id}\n"
-    with open(FILE_PATH, "a") as file:
-        file.write(entry)
+def save_vps_details(node, token, vps_id, customer_id):
+    node_config = NODE_DETAILS[node]
+    entry = f"{token},{vps_id},{customer_id}\n"
+    remote_file_path = "/home/ssh/tokens.txt"
+    save_command = f"echo '{entry}' >> {remote_file_path}"
+    try:
+        run_ssh_command(node, save_command)
+        print(f"Token successfully saved on node {node}")
+    except Exception as e:
+        raise Exception(f"Failed to save token on node {node}: {str(e)}")
 
 def run_shell_command(command):
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
@@ -72,7 +77,7 @@ async def create_proxmox_vps_on_node(memory, cores, disk, customer_id, node):
     try:
         run_ssh_command(node, creation_command)
         run_ssh_command(node, start_command)
-        save_vps_details(token, vps_id, customer_id)
+        save_vps_details(node, token, vps_id, customer_id)
         return {
             "vps_id": vps_id,
             "token": token,
