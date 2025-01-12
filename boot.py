@@ -44,9 +44,9 @@ def send_webhook_log(title, description, color=0x3498db):
 
 def save_vps_details(node, token, vps_id, customer_id):
     node_config = NODE_DETAILS[node]
-    entry = f"{token},{vps_id},{customer_id}\n"
+    entry = f"{token},{vps_id}\n"
     remote_file_path = "/home/ssh/tokens.txt"
-    save_command = f"echo '{entry}' >> {remote_file_path}"
+    save_command = f"echo '{entry}' | sudo tee -a {remote_file_path} > /dev/null"
     try:
         run_ssh_command(node, save_command)
         print(f"Token successfully saved on node {node}")
