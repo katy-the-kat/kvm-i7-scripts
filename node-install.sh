@@ -3,6 +3,6 @@ apt update
 apt install python3 sshpass figlet python3-pip -y
 pip3 install discord paramiko docker requests --break-system-packages
 adduser ssh
-wget -O /usr/bin/nossh 
+wget -O /usr/bin/nossh https://raw.githubusercontent.com/katy-the-kat/kvm-i7-scripts/refs/heads/main/nossh
 chmod +x /usr/bin/nossh
 chsh -s /usr/bin/nossh ssh
