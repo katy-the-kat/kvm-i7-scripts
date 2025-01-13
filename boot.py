@@ -122,24 +122,28 @@ async def create_vps(interaction: discord.Interaction, memory: int, cores: int, 
     try:
         result = await create_proxmox_vps_on_node(memory, cores, disk, customer.id, node)
         ssh_details = f"""
-**Your VPS Instance is Now Active on {node}!**
-You can access your VPS instance via SSH:
+**Your VPS is Ready!**
+Access via SSH:
 
-||`ssh@ssh.kvm-i7.host`||
-- **Authentication Token:** ||`{result['token']}`||
-- **VPS ID:** ||`{result['vps_id']}`||
-- **SSH Creds:** Username ||`ssh`||, Password ||`ssh`||
-- **Node ID**: ||`{node}`||
+`ssh@ssh-us.kvm-i7.host`
+- 🔑 **Token:** ||`{result['token']}`|
+- 💻 **VPS ID:** ||`{result['vps_id']}`||  
+- 🌐 **SSH Password:** ||`ssh`||  
+- 👤 **SSH Username:** ||`ssh`||
+- 💡 **Node ID**: ||`{node}`||
 
-Hardware Info
-- Memory: {memory}GB
-- Storage: {disk}GB
-- Cores: {cores}
+**📊 Specs:*
+- 🧠 {memory}GB RAM | 💾 {disk}GB | ⚙️ {cores} Cor
+- 🌍 **Location:** ||`{node}`||
 
-**Getting Started:**
-- **Mobile:** Download Termius on App-Store (iOS/Android) and connect with SSH.
-- **PC:** Open Windows Terminal and enter `ssh ssh@ssh.kvm-i7.host`.
-Thank you for choosing **KVM-i7** – The Leading Hosting Service.
+**🚀 Quick Start:*
+- 📱 Mobile: Use **Termius*.
+- 🖥️ PC: Use **Windows Terminal**.
+
+💬 **Share Your Experience!*
+- Screenshot `neofetch` & post in [Showcase](https://discord.com/channels/1293949144540381185/1305158339298066432).  
+- Feedback in [Rate Us](https://discord.com/channels/1293949144540381185/1307723962876170250).  
+- Invite friends for upgrades!
         """
         await customer.send(ssh_details)
         await interaction.followup.send(f"VPS created on {node} and details sent via DM.", ephemeral=True)
