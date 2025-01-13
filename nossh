@@ -23,7 +23,7 @@ display_banner() {
   figlet KVM-i7
   echo -e "${WHITE}A Paid VPS Hosting Company with 4K+ Members (discord.gg/kvm)${RESET}"
   echo
-  echo -e "Node Usage${RESET}"
+  echo -e "${BLUE}Node Usage${RESET}"
   echo -e " ${RAM_EMOJI}  RAM: ${WHITE}$ram_usage${RESET}"
   echo -e " ${STORAGE_EMOJI}  Storage: ${WHITE}$storage_usage${RESET}"
   echo -e " ${CPU_EMOJI}  CPU: ${WHITE}$cpu_usage${RESET}"
