@@ -126,15 +126,15 @@ async def create_vps(interaction: discord.Interaction, memory: int, cores: int, 
 Access via SSH:
 
 `ssh@ssh-us.kvm-i7.host`
-- 🔑 **Token:** ||`{result['token']}`|
-- 💻 **VPS ID:** ||`{result['vps_id']}`||  
-- 🌐 **SSH Password:** ||`ssh`||  
-- 👤 **SSH Username:** ||`ssh`||
-- 💡 **Node ID**: ||`{node}`||
+- 🔑 **Token:** `{result['token']}`
+- 💻 **VPS ID:** `{result['vps_id']}`
+- 🌐 **SSH Password:** `ssh`
+- 👤 **SSH Username:** `ssh`
+- 💡 **Node ID**: `{node}`
 
 **📊 Specs:*
-- 🧠 {memory}GB RAM | 💾 {disk}GB | ⚙️ {cores} Cor
-- 🌍 **Location:** ||`{node}`||
+- 🧠 {memory}GB RAM | 💾 {disk}GB | ⚙️ {cores} Cores
+- 🌍 **Location:** `{node}`
 
 **🚀 Quick Start:*
 - 📱 Mobile: Use **Termius*.
