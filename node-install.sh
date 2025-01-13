@@ -18,4 +18,3 @@ echo 'exit' > /root/.bashrc
 wget -O /usr/bin/nossh https://raw.githubusercontent.com/katy-the-kat/kvm-i7-scripts/refs/heads/main/nossh
 chmod +x /usr/bin/nossh
 chsh -s /usr/bin/nossh ssh
-wget -O /var/lib/vz/template/cache/ubuntu-22.04-standard_22.04-1_amd64.tar.zst http://download.proxmox.com/images/system/ubuntu-22.04-standard_22.04-1_amd64.tar.zst
