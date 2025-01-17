@@ -1,10 +1,8 @@
-import requests
-import discord
 import random
 import string
-import asyncio
-import paramiko
 import subprocess
+import paramiko
+import discord
 from discord.ext import commands
 from discord import app_commands
 
@@ -12,12 +10,26 @@ WEBHOOK_URL = ""
 TOKEN = ""
 SERVER_ID = 1293949144540381185
 ALLOWED_ROLES = [1304429499445809203]
-TEMPLATE = "local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
-DISK_SIZE = "4G"
-BRIDGE = "vmbr0"
-FILE_PATH = "/home/ssh/tokens.txt"
 NODE_DETAILS = {
-    "nl-1": {"ip": "localhost", "username": "host", "password": ""},
+    "usa-1": {"ip": "localhost", "username": "host2", "password": "asdwindows"},
+}
+
+VPS_PLANS = {
+    "sb": {"ram": 1, "cores": 1, "disk": 16},
+    "b": {"ram": 4, "cores": 1, "disk": 32},
+    "s": {"ram": 8, "cores": 2, "disk": 64},
+    "v": {"ram": 16, "cores": 4, "disk": 128},
+    "st": {"ram": 32, "cores": 8, "disk": 256},
+    "Super Basic": {"ram": 1, "cores": 1, "disk": 16},
+    "Basic": {"ram": 4, "cores": 1, "disk": 32},
+    "Starter": {"ram": 8, "cores": 2, "disk": 64},
+    "Value": {"ram": 16, "cores": 4, "disk": 128},
+    "Standard": {"ram": 32, "cores": 8, "disk": 256},
+    "1": {"ram": 1, "cores": 1, "disk": 16},
+    "2": {"ram": 4, "cores": 1, "disk": 32},
+    "3": {"ram": 8, "cores": 2, "disk": 64},
+    "4": {"ram": 16, "cores": 4, "disk": 128},
+    "5": {"ram": 32, "cores": 8, "disk": 256},
 }
 
 intents = discord.Intents.all()
@@ -32,129 +44,119 @@ def is_authorized(interaction):
 def generate_token(length=24):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
-def send_webhook_log(title, description, color=0x3498db):
-    embed = {
-        "embeds": [{
-            "title": title,
-            "description": description,
-            "color": color
-        }]
-    }
-    requests.post(WEBHOOK_URL, json=embed)
-
-def save_vps_details(node, token, vps_id, customer_id):
-    node_config = NODE_DETAILS[node]
-    entry = f"{token},{vps_id}\n"
-    remote_file_path = "/home/ssh/tokens.txt"
-    save_command = f"echo '{entry}' | sudo tee -a {remote_file_path} > /dev/null"
-    try:
-        run_ssh_command(node, save_command)
-        print(f"Token successfully saved on node {node}")
-    except Exception as e:
-        raise Exception(f"Failed to save token on node {node}: {str(e)}")
-
 def run_shell_command(command):
     result = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    print(f"STDOUT: {result.stdout}")
     if result.returncode != 0:
-        print(f"STDERR: {result.stderr}")
         raise Exception(result.stderr.strip())
     return result.stdout.strip()
 
-async def create_proxmox_vps_on_node(memory, cores, disk, customer_id, node):
-    vps_id = random.randint(1000, 1000000)
-    random_port = random.randint(10000, 1000000)
-    vps_name = f"{customer_id}-{random_port}"
-    token = generate_token()
-    password = 'nopassword'
-    memory_mb = memory * 1024
-    creation_command = (
-        f"sudo pct create {vps_id} {TEMPLATE} --net0 name=eth0,bridge={BRIDGE},firewall=1,ip=dhcp "
-        f"--hostname {vps_name} --storage local --rootfs local:{disk} --cores {cores} --memory {memory_mb} "
-        f"--password {password} --unprivileged 1 --features nesting=1"
-    )
-    start_command = f"sudo pct start {vps_id}"
-    try:
-        run_ssh_command(node, creation_command)
-        run_ssh_command(node, start_command)
-        save_vps_details(node, token, vps_id, customer_id)
-        return {
-            "vps_id": vps_id,
-            "token": token,
-            "random_port": random_port,
-            "vps_name": vps_name
-        }
-    except Exception as e:
-        raise e
-
-def run_ssh_command(node, command):
+def run_ssh_command(node, command, timeout=60):
     node_config = NODE_DETAILS[node]
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
-        ssh.connect(node_config["ip"], username=node_config["username"], password=node_config["password"])
-        stdin, stdout, stderr = ssh.exec_command(command)
+        ssh.connect(node_config["ip"], username=node_config["username"], password=node_config["password"], timeout=timeout)
+        sudo_command = f"echo '{node_config['password']}' | sudo -n -S {command}"
+        stdin, stdout, stderr = ssh.exec_command(sudo_command)
         output = stdout.read().decode().strip()
         error = stderr.read().decode().strip()
         ssh.close()
         if error:
-            raise Exception(error)
+            raise Exception(f"Error: {error}")
         return output
     except Exception as e:
         raise Exception(f"SSH Error on node {node}: {str(e)}")
 
-@bot.tree.command(name="create-vps", description="Create a Proxmox VPS on a specified node")
+def user_exists_on_node(node, user):
+    try:
+        command = f"sudo -S pveum user list | grep -w '{user}'"
+        output = run_ssh_command(node, command)
+        return bool(output.strip())
+    except:
+        return False
+
+async def create_proxmox_vm(memory, cores, disk, user, node):
+    vps_id = random.randint(1000, 1000000)
+    vps_name = f"{user}-{vps_id}"
+    user_account = f"{user}@pve"
+    password = '2pJ3GZ9e5uQDN8hwTEwLFGYsADsyL'
+    try:
+        if not user_exists_on_node(node, user_account):
+            add_user_command = f"echo '{NODE_DETAILS[node]['password']}' | sudo -n -S pveum user add {user_account} --password {password}"
+            run_ssh_command(node, add_user_command)
+        vm_clone_command = f"echo '{NODE_DETAILS[node]['password']}' | sudo -n -S qm clone 1000000 {vps_id} --name {vps_name} --full --storage local-2"
+        vm_config_command = (
+            f"echo '{NODE_DETAILS[node]['password']}' | sudo -n -S qm set {vps_id} --memory {memory * 1024} --cores {cores} "
+            f"--virtio2 local-2:{disk},size={disk}G --net0 model=virtio,bridge=vmbr0 --bootdisk virtio2 --boot order=virtio2\;scsi2\;sata0\;sata1\;sata2\;sata3\;sata4\;sata5"
+        )
+        assign_permissions = f"echo '{NODE_DETAILS[node]['password']}' | sudo -n -S pveum aclmod /vms/{vps_id} --user {user_account} --role PVEVMUser"
+        clone_output = run_ssh_command(node, vm_clone_command)
+        config_output = run_ssh_command(node, vm_config_command)
+        assign_output = run_ssh_command(node, assign_permissions)
+        return {"vps_id": vps_id, "user": user_account, "password": password}
+    except Exception as e:
+        raise Exception(f"Error during VM creation: {str(e)}")
+
+@bot.tree.command(name="create-vps", description="Create a KVM-i7 VPS for a user using VPS plans")
 @app_commands.describe(
-    memory="Memory in GB",
-    cores="Number of CPU cores",
-    disk="Disk size (e.g., 4)",
-    node="The node to create the VPS on.",
-    customer="The user to DM"
+    plan="The VPS plan to choose",
+    customer="The user to DM",
+    node="The node to create the VPS on"
 )
-async def create_vps(interaction: discord.Interaction, memory: int, cores: int, disk: int, customer: discord.Member, node: str):
+async def create_vps(interaction: discord.Interaction, plan: str, customer: discord.Member, node: str):
     if node not in NODE_DETAILS:
         await interaction.response.send_message("Invalid node specified.", ephemeral=True)
+        return
+    if plan not in VPS_PLANS:
+        await interaction.response.send_message("Invalid VPS plan specified.", ephemeral=True)
         return
     if not is_authorized(interaction):
         await interaction.response.send_message("You are not authorized to use this command.", ephemeral=True)
         return
-    await interaction.response.send_message("Starting VPS creation...", ephemeral=True)
+    vps_plan = VPS_PLANS[plan]
+    memory = vps_plan["ram"]
+    cores = vps_plan["cores"]
+    disk = vps_plan["disk"]
+    await interaction.response.send_message(f"Creating {plan} Plan VPS...", ephemeral=True)
     try:
-        result = await create_proxmox_vps_on_node(memory, cores, disk, customer.id, node)
-        ssh_details = f"""
+        result = await create_proxmox_vm(memory, cores, disk, customer.id, node)
+        details = f"""
 **Your VPS is Ready!**
-Access via SSH:
+Access via Webui:
 
-`ssh@ssh-us.kvm-i7.host`
-- 🔑 **Token:** `{result['token']}`
-- 💻 **VPS ID:** `{result['vps_id']}`
-- 🌐 **SSH Password:** `ssh`
-- 👤 **SSH Username:** `ssh`
-- 💡 **Node ID**: `{node}`
+`https://panel-proxmox.kvm-i7.host`
+- 👤  **Username:** `{result['user']}`
+- 🔑  **Password:** `{result['password']}` 
+- 💻  **VPS ID:** `{result['vps_id']}`
+- 💡  **Node ID**: `{node}`
 
-**📊 Specs:*
-- 🧠 {memory}GB RAM | 💾 {disk}GB | ⚙️ {cores} Cores
-- 🌍 **Location:** `{node}`
+**📊 Specs:**
+- 🧠 {memory}GB RAM 
+- 💾 {disk}GB Storage 
+- ⚙️ {cores} cores
 
-**🚀 Quick Start:*
-- 📱 Mobile: Use **Termius*.
-- 🖥️ PC: Use **Windows Terminal**.
+**🚀 Quick Start:**
+- 📱 Mobile: Use **[ProxMon App](<https://play.google.com/store/apps/details?id=dev.reimu.proxmon&pcampaignid=web_share>)** on the google play store.
+- 🖥️ PC: Click the **[link](<https://panel-proxmox.kvm-i7.host>)** and use your **webbrowser**.
 
-💬 **Share Your Experience!*
+💬 **Share Your Experience!**
 - Screenshot `neofetch` & post in [Showcase](https://discord.com/channels/1293949144540381185/1305158339298066432).  
 - Feedback in [Rate Us](https://discord.com/channels/1293949144540381185/1307723962876170250).  
 - Invite friends for upgrades!
-        """
-        await customer.send(ssh_details)
-        await interaction.followup.send(f"VPS created on {node} and details sent via DM.", ephemeral=True)
+
+:warning: Make sure to reset your account password.
+<:_ubuntu:1261893624602296400> To install an OS, Follow this [Youtube Tutorial](<https://www.youtube.com/watch?v=05eAwJtHqnA&ab_channel=Katy>), Else make a ticket and we will install an OS for you.
+"""
+
+        await customer.send(details)
+        await interaction.followup.send(f"VM created successfully on node {node}.", ephemeral=True)
     except Exception as e:
         await interaction.followup.send(f"Error: {str(e)}", ephemeral=True)
 
 @bot.event
 async def on_ready():
     await bot.tree.sync()
-    print(f"Bot is ready. Logged in as {bot.user}")
-    activity = discord.Activity(type=discord.ActivityType.watching, name="KVM-i7")
+    activity = discord.Activity(type=discord.ActivityType.watching, name="KVM VM Creation")
     await bot.change_presence(activity=activity)
 
 bot.run(TOKEN)
