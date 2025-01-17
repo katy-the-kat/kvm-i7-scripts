@@ -11,7 +11,7 @@ TOKEN = ""
 SERVER_ID = 1293949144540381185
 ALLOWED_ROLES = [1304429499445809203]
 NODE_DETAILS = {
-    "usa-1": {"ip": "localhost", "username": "host2", "password": "asdwindows"},
+    "usa-1": {"ip": "localhost", "username": "host2", "password": ""},
 }
 
 VPS_PLANS = {
@@ -79,7 +79,7 @@ async def create_proxmox_vm(memory, cores, disk, user, node):
     vps_id = random.randint(1000, 1000000)
     vps_name = f"{user}-{vps_id}"
     user_account = f"{user}@pve"
-    password = '2pJ3GZ9e5uQDN8hwTEwLFGYsADsyL'
+    password = ''
     try:
         if not user_exists_on_node(node, user_account):
             add_user_command = f"echo '{NODE_DETAILS[node]['password']}' | sudo -n -S pveum user add {user_account} --password {password}"
@@ -137,7 +137,7 @@ Access via Webui:
 
 **🚀 Quick Start:**
 - 📱 Mobile: Use **[ProxMon App](<https://play.google.com/store/apps/details?id=dev.reimu.proxmon&pcampaignid=web_share>)** on the google play store.
-- 🖥️ PC: Click the **[link](<https://panel-proxmox.kvm-i7.host>)** and use your **webbrowser**.
+- 🖥️ PC: Click the **[Link](<https://panel-proxmox.kvm-i7.host>)** and use your **browser**.
 
 💬 **Share Your Experience!**
 - Screenshot `neofetch` & post in [Showcase](https://discord.com/channels/1293949144540381185/1305158339298066432).  
@@ -145,7 +145,7 @@ Access via Webui:
 - Invite friends for upgrades!
 
 :warning: Make sure to reset your account password.
-<:_ubuntu:1261893624602296400> To install an OS, Follow this [Youtube Tutorial](<https://www.youtube.com/watch?v=05eAwJtHqnA&ab_channel=Katy>), Else make a ticket and we will install an OS for you.
+<:block:1314684358627557567> To install an OS, Follow this [Youtube Tutorial](<https://www.youtube.com/watch?v=05eAwJtHqnA&ab_channel=Katy>), Else make a ticket and we will install an OS for you.
 """
 
         await customer.send(details)
