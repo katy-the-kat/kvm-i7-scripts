@@ -1,21 +1,25 @@
-bash -c "$(wget -qLO - https://github.com/community-scripts/ProxmoxVE/raw/main/misc/post-pve-install.sh)"
-apt update
-apt install figlet sudo -y
-rm -rf /etc/motd
-rm /etc/sudoers
-echo '
-Defaults        env_reset
-Defaults        mail_badpass
-Defaults        secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-Defaults        use_pty
-root    ALL=(ALL:ALL) ALL
-host    ALL=(ALL:ALL) NOPASSWD: ALL
-ssh ALL=(ALL) NOPASSWD: /usr/sbin/pct enter *
-@includedir /etc/sudoers.d
-' > /etc/sudoers
-adduser ssh
-adduser host
-echo 'exit' > /root/.bashrc
-wget -O /usr/bin/nossh https://raw.githubusercontent.com/katy-the-kat/kvm-i7-scripts/refs/heads/main/nossh
-chmod +x /usr/bin/nossh
-chsh -s /usr/bin/nossh ssh
+#!/bin/sh
+
+apt install nano docker.io -y
+
+cat <<EOF > Dockerfile
+FROM ubuntu:22.04
+
+#RUN sed -i -e 's|http://[^ ]*archive.ubuntu.com/ubuntu|http://my.archive.ubuntu.com/ubuntu|g' -e 's|http://[^ ]*security.ubuntu.com/ubuntu|http://my.archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list  
+RUN apt-get update 
+RUN yes | apt-get install -y nano htop wget dialog openssh-server openssh-client sudo tmate snapd
+RUN yes | unminimize
+RUN wget -O /usr/bin/port https://raw.githubusercontent.com/katy-the-kat/realinstallscript/refs/heads/main/ipv4x
+RUN chmod +x /usr/bin/port
+RUN sed -i 's/^#\?\s*PermitRootLogin\s\+.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN echo 'root:root' | chpasswd
+RUN printf '#!/bin/sh\nexit 0' > /usr/sbin/policy-rc.d
+RUN apt-get install -y systemd systemd-sysv dbus dbus-user-session
+RUN printf "systemctl start systemd-logind" >> /etc/profile
+
+ENTRYPOINT ["/sbin/init"]
+EOF
+
+docker build -t utmp .
+
+clear && echo done
