@@ -67,7 +67,7 @@ async def create_docker_container(memory, cores, customer_id, vps_count, node, r
         if stderr.read():
             return None, "Error in container creation."
         if node["tmate"]:
-            exec_tmate_command = f"docker exec {container_name} tmate -F"
+            exec_tmate_command = f"""docker exec {container_name} sh -c "cd ~ && tmate -F" """
             stdin, stdout, stderr = await asyncio.to_thread(ssh.exec_command, exec_tmate_command)
             tmate_session = await capture_ssh_session_line(stdout)
             if not tmate_session:
