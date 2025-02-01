@@ -62,7 +62,7 @@ async def create_docker_container(memory, cores, customer_id, vps_count, node, r
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
         await asyncio.to_thread(ssh.connect, remote_host, username=remote_user, password=remote_password)
-        docker_command = f"docker run -itd --hostname=spacecore --privileged --dns=1.1.1.1 --net kvmnet --memory {memory} --cpus {cores} --name {container_name} utmp &"
+        docker_command = f"docker run -itd --hostname=spacecore --privileged --dns=1.1.1.1 --net kvmnet --memory {memory}g --cpus {cores} --name {container_name} utmp &"
         stdin, stdout, stderr = await asyncio.to_thread(ssh.exec_command, docker_command)
         if stderr.read():
             return None, "Error in container creation."
@@ -82,9 +82,9 @@ async def create_docker_container(memory, cores, customer_id, vps_count, node, r
             return container_name, remote_host, random_port, random_password
     finally:
         ssh.close()
-
+        
 @bot.tree.command(name="deploy", description="Deploy a customer VPS on a specific node")
-@app_commands.describe(memory="Memory limit (e.g., 512m, 1g)", cores="Number of CPU cores", customer="The user to DM", node_id="Node ID (e.g., usa-1)")
+@app_commands.describe(memory="Memory limit (e.g., 1)", cores="Number of CPU cores", customer="The user to DM", node_id="Node ID (e.g., usa-1)")
 async def deploy_customer(interaction: discord.Interaction, memory: str, cores: str, customer: discord.Member, node_id: str):
     if not is_authorized(interaction):
         await interaction.response.send_message("You don't have permission to use this command.", ephemeral=True)
