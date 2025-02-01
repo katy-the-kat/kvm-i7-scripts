@@ -26,4 +26,6 @@ EOF
 
 docker build -t utmp .
 
+docker network create --subnet=10.73.17.0/24 kvmnet
+
 clear && echo done
