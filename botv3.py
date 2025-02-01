@@ -8,9 +8,21 @@ import asyncio
 from discord.ext import commands
 from discord import app_commands
 
+##########################################
+#
+# Configure the Internet - 2024 / 1 / 31
+# 
+# Run the following command:
+#
+# docker network create --subnet=10.73.17.0/24 kvmnet
+#
+# To make the network for kvm-i7 servers.
+#
+##########################################
+
 NODES = [
-    {"id": "test-1", "ip": "", "tmate": False},
-    {"id": "test-2", "ip": "", "tmate": True}
+    {"id": "my-1-xen", "ip": "", "tmate": False},
+    {"id": "cz-1-xen", "ip": "", "tmate": True},
 ]
 
 remote_user = "root"
@@ -50,7 +62,7 @@ async def create_docker_container(memory, cores, customer_id, vps_count, node, r
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     try:
         await asyncio.to_thread(ssh.connect, remote_host, username=remote_user, password=remote_password)
-        docker_command = f"docker run -itd --privileged  --memory {memory} --cpus {cores} --name {container_name} utmp &"
+        docker_command = f"docker run -itd --hostname=spacecore --privileged --dns=1.1.1.1 --net kvmnet --memory {memory} --cpus {cores} --name {container_name} utmp &"
         stdin, stdout, stderr = await asyncio.to_thread(ssh.exec_command, docker_command)
         if stderr.read():
             return None, "Error in container creation."
@@ -62,7 +74,7 @@ async def create_docker_container(memory, cores, customer_id, vps_count, node, r
                 return None, "Error retrieving tmate session."
             return container_name, remote_host, tmate_session, None
         else:
-            ssh_port_command = f"docker run -itd --privileged  -p {random_port}:22 --memory {memory} --cpus {cores} --name {container_name} utmp"
+            ssh_port_command = f"docker run -itd --hostname=spacecore --privileged --dns=1.1.1.1 --net kvmnet -p {random_port}:22 --memory {memory} --cpus {cores} --name {container_name} utmp"
             await asyncio.to_thread(ssh.exec_command, ssh_port_command)
             random_password = generate_random_password()
             password_command = f"docker exec {container_name} sh -c \"echo root:{random_password} | chpasswd\""
@@ -97,8 +109,8 @@ Access via SSH:
 
 `{ssh_info}`
 - 🌐 **Shared-IPv4 Usage:** Use the `port` command to add ports
-- 💾 **Memory:** {memory}GB
-- 📗 **Cores:** {cores}
+- 💾 **VPS Server Memory:** {memory}GB
+- 📗 **VPS Server Cores:** {cores}
 
 **🚀 Quick Start:**
 - 📱 Mobile: Use **Termux** to connect. (Termius won't work)
