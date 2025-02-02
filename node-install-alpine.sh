@@ -28,4 +28,7 @@ docker build -t utmp .
 
 docker network create --subnet=10.73.17.0/24 kvmnet
 
+echo "fs.inotify.max_user_instances = 2147483647" > /etc/sysctl.conf 
+sysctl -p 
+
 clear && echo done
