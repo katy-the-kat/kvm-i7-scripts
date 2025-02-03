@@ -31,7 +31,7 @@ RUN apt update
 RUN apt install -y fastfetch  
 RUN wget -O /usr/bin/neofetch https://github.com/dylanaraps/neofetch/raw/master/neofetch  
 RUN chmod +x /usr/bin/neofetch  
-RUN mkdir /var/run/sshd    
+RUN mkdir /var/run/sshd
 RUN echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config  
 CMD ["/usr/sbin/sshd", "-D"]
 EOF
