@@ -24,9 +24,8 @@ docker network create --subnet=10.73.17.0/24 kvmnet
 
 cat <<EOF > Dockerfile2
 FROM ubuntu:22.04  
-RUN sed -i -e 's|http://[^ ]*archive.ubuntu.com/ubuntu|http://it.archive.ubuntu.com/ubuntu|g' -e 's|http://[^ ]*security.ubuntu.com/ubuntu|http://it.archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list  
 RUN apt update
-RUN apt install -y openssh-server software-properties-common curl sudo wget dialog
+RUN apt install -y openssh-server software-properties-common curl sudo wget dialog tmate
 RUN add-apt-repository ppa:zhangsongcui3371/fastfetch -y  
 RUN apt update
 RUN apt install -y fastfetch  
