@@ -25,12 +25,7 @@ docker network create --subnet=10.73.17.0/24 kvmnet
 cat <<EOF > Dockerfile2
 FROM ubuntu:22.04  
 RUN apt update
-RUN apt install -y openssh-server software-properties-common curl sudo wget dialog tmate
-RUN add-apt-repository ppa:zhangsongcui3371/fastfetch -y  
-RUN apt update
-RUN apt install -y fastfetch  
-RUN wget -O /usr/bin/neofetch https://github.com/dylanaraps/neofetch/raw/master/neofetch  
-RUN chmod +x /usr/bin/neofetch  
+RUN apt install -y openssh-server curl sudo wget dialog tmate
 RUN mkdir /var/run/sshd
 RUN echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config  
 CMD ["/usr/sbin/sshd", "-D"]
