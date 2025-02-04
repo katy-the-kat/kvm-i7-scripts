@@ -36,17 +36,6 @@ docker build -t utmp .
 
 docker network create --subnet=10.73.17.0/24 kvmnet
 
-cat <<EOF > Dockerfile2
-FROM ubuntu:22.04  
-RUN apt update
-RUN apt install -y openssh-server curl sudo wget dialog tmate
-RUN mkdir /var/run/sshd
-RUN echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config  
-CMD ["/usr/sbin/sshd", "-D"]
-EOF
-
-docker build -t tmatelol -f Dockerfile2 . 
-
 echo "fs.inotify.max_user_instances = 2147483647" > /etc/sysctl.conf 
 sysctl -p 
 
