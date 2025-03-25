@@ -16,7 +16,7 @@ CONNECT_EMOJI="🔗"
 ERROR_EMOJI="⚠"
 ERROR_EMOJI_V2="❌"
 SUCCESS_EMOJI="✅"
-trap 'echo -e "\n\n${RED}${ERROR_EMOJI_V2} Script interrupted. Exiting with status 1.${RESET}\n"; exit 1' SIGINT
+trap 'echo -e "\n\n${RED}${ERROR_EMOJI_V2} Exiting with status 1.${RESET}\n"; exit 1' SIGINT
 display_banner() {
   clear
   echo -e "${CYAN}"
@@ -33,11 +33,11 @@ get_ram_usage() {
   total_ram=$(free -m | awk '/^Mem:/ {print $2}')
   used_ram=$(free -m | awk '/^Mem:/ {print $3}')  
   if [ "$used_ram" -lt 1024 ]; then
-    echo "${used_ram}MB / 128GB"
+    echo "${used_ram}MB"
   else
     used_ram_gb=$(echo "scale=2; $used_ram/1024" | bc)
     total_ram_gb=$(echo "scale=2; $total_ram/1024" | bc)
-    echo "${used_ram_gb}GB / 128GB"
+    echo "${used_ram_gb}GB"
   fi
 }
 get_cpu_usage() {
@@ -48,7 +48,7 @@ get_storage_usage() {
   total_storage=$(df -h --total | grep "total" | awk '{print $2}')
   used_storage=$(df -h --total | grep "total" | awk '{print $3}')
   usage_percentage=$(df -h --total | grep "total" | awk '{print $5}')
-  echo "${usage_percentage} / 1.5TB"
+  echo "${usage_percentage}"
 }
 ram_usage=$(get_ram_usage)
 cpu_usage=$(get_cpu_usage)
@@ -91,10 +91,6 @@ while true; do
   - \033[1;34m1TBp DDOS Protection\033[0m\n\
   - \033[1;34m1Gbp Internet (Fair-Use)\033[0m\n\
   - \033[1;34mHigh-Performance\033[0m\n\n\
-\033[1;36mNode Specifications:\033[0m\n\
-  - \033[1;33mNode Server:\033[0m \033[1;37m1U4LWX5702L2T\033[0m\n\
-  - \033[1;33mNode CPU:    \033[0m\033[1;37m1x AMD Ryzen 9 5900X\033[0m\n\
-  - \033[1;33mNode RAM:    \033[0m\033[1;37m128GB\033[0m\n\n\
 \033[1;36mHelpful Resources:\033[0m\n\
   - \033[1;34mOS Documentation:\033[0m  \033[1;37mhttps://help.ubuntu.com\033[0m\n\
   - \033[1;34mServer Management:\033[0m \033[1;37mhttps://landscape.canonical.com\033[0m\n\
