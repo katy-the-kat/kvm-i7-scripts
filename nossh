@@ -95,7 +95,7 @@ while true; do
   - \033[1;34mOS Documentation:\033[0m  \033[1;37mhttps://help.ubuntu.com\033[0m\n\
   - \033[1;34mServer Management:\033[0m \033[1;37mhttps://landscape.canonical.com\033[0m\n\
   - \033[1;34mVPS Support:      \033[0m \033[1;37mhttps://discord.gg/kvm\033[0m\n\n\
-\033[1;31mReminder: Please refrain from cryptocurrency mining on KVM-i7\033[0m\n\n\
+\033[1;31mReminder: Please refrain from cryptocurrency mining on KVM-i7\033[0m\n\n\"
   echo
   if sudo pct enter $vps_id; then
 #    echo -e "${GREEN}${SUCCESS_EMOJI}  SSH session started successfully!${RESET}"
