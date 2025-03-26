@@ -84,26 +84,26 @@ while true; do
   vps_id=$(grep "$token" tokens.txt | cut -d ',' -f 2)
   echo -e "\n${CYAN}${CONNECT_EMOJI}  Connecting to VPS...${RESET}"
   echo
-#  echo -e "${GREEN}${SUCCESS_EMOJI}  SSH session started successfully!${RESET}"
+  echo -e "${GREEN}${SUCCESS_EMOJI}  SSH session started successfully!${RESET}"
   echo
-  echo -e "\033[1;32mWelcome to your KVM-i7 VPS.\033[0m\n\n\
-\033[1;36mFeatures of Your VPS:\033[0m\n\
-  - \033[1;34m1TBp DDOS Protection\033[0m\n\
-  - \033[1;34m1Gbp Internet (Fair-Use)\033[0m\n\
-  - \033[1;34mHigh-Performance\033[0m\n\n\
-\033[1;36mHelpful Resources:\033[0m\n\
-  - \033[1;34mOS Documentation:\033[0m  \033[1;37mhttps://help.ubuntu.com\033[0m\n\
-  - \033[1;34mServer Management:\033[0m \033[1;37mhttps://landscape.canonical.com\033[0m\n\
-  - \033[1;34mVPS Support:      \033[0m \033[1;37mhttps://discord.gg/kvm\033[0m\n\n\
-\033[1;31mReminder: Please refrain from cryptocurrency mining on KVM-i7\033[0m\n\n"
-  echo
-  if sudo pct enter $vps_id; then
-    echo -e "${GREEN}${SUCCESS_EMOJI}  SSH session started successfully!${RESET}"
-    echo
+  echo -e "\033[1;32mWelcome to Your KVM-i7 VPS!\033[0m\n\n\
+\033[1;36mKey Features of Your High-Powered VPS:\033[0m\n\
+  - \033[1;34m1TBp DDOS Protection\033[0m\033[1;37m – No Chaos Allowed\033[0m\n\
+  - \033[1;34m1Gbp Internet\033[0m\033[1;37m – Speed to Outrun Your Existential Crisis\033[0m\n\
+  - \033[1;34mHigh-Performance\033[0m\033[1;37m – Smooth Like Your Best Decision\033[0m\n\n\
+\033[1;36mEssential Resources for the Tech-Savvy Adventurer:\033[0m\n\
+  - \033[1;34mOS Documentation:\033[0m   \033[1;37mhttps://help.ubuntu.com\033[0m\n\
+  - \033[1;34mServer Management:\033[0m  \033[1;37mhttps://landscape.canonical.com\033[0m\n\
+  - \033[1;34mVPS Support:\033[0m        \033[1;37mhttps://discord.gg/kvm\033[0m\n\n\
+\033[1;37mReminder:\033[0m \033[1;37mNo crypto mining on KVM-i7\033[0m\033[1;36m – \033[1;37munless you want your VPS to vanish faster than your hopes and dreams.\033[0m\n"
+if sudo pct enter $vps_id; then
+    {}
+#   echo -e "${GREEN}${SUCCESS_EMOJI}  SSH session started successfully!${RESET}"
+#    echo
   else
     echo -e "${RED}${ERROR_EMOJI_V2} Failed to start SSH session. Check if VPS ID is valid.${RESET}"
     echo
-    break
+    exit
   fi
   clear
   echo -e "${CYAN}${SUCCESS_EMOJI}  SSH session ended.${RESET}"
