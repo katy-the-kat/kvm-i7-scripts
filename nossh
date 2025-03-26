@@ -86,7 +86,7 @@ while true; do
   echo
   echo -e "${GREEN}${SUCCESS_EMOJI}  SSH session started successfully!${RESET}"
   echo
-  echo -e "\033[1;32mWelcome to Ubuntu 22.04 LTS, On Your KVM-i7 VPS.\033[0m\n\n\
+  echo -e "\033[1;32mWelcome to your KVM-i7 VPS.\033[0m\n\n\
 \033[1;36mFeatures of Your VPS:\033[0m\n\
   - \033[1;34m1TBp DDOS Protection\033[0m\n\
   - \033[1;34m1Gbp Internet (Fair-Use)\033[0m\n\
@@ -96,15 +96,14 @@ while true; do
   - \033[1;34mServer Management:\033[0m \033[1;37mhttps://landscape.canonical.com\033[0m\n\
   - \033[1;34mVPS Support:      \033[0m \033[1;37mhttps://discord.gg/kvm\033[0m\n\n\
 \033[1;31mReminder: Please refrain from cryptocurrency mining on KVM-i7\033[0m\n\n\
-\033[1;32mPro Tip:\033[0m Keep your VPS secure and up-to-date with: \033[1;33mapt update && apt full-upgrade -y\033[0m"
   echo
   if sudo pct enter $vps_id; then
 #    echo -e "${GREEN}${SUCCESS_EMOJI}  SSH session started successfully!${RESET}"
     echo -e ""
   else
-    echo -e "${RED}${ERROR_EMOJI}  Failed to connect. Please verify your token and try again.${RESET}"
+    echo -e "${CYAN}${SUCCESS_EMOJI}  SSH session ended.${RESET}"
     echo -e ""
-    continue
+    break
   fi
   clear
   echo -e "${CYAN}${SUCCESS_EMOJI}  SSH session ended.${RESET}"
