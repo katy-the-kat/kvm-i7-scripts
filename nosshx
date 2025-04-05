@@ -1,0 +1,110 @@
+#!/bin/bash
+cd ~
+clear
+RED='\033[1;91m'       # Bright Red
+GREEN='\033[1;92m'     # Bright Green
+YELLOW='\033[1;93m'    # Bright Yellow
+BLUE='\033[1;94m'      # Bright Blue
+MAGENTA='\033[1;95m'   # Bright Magenta
+CYAN='\033[1;96m'      # Bright Cyan
+WHITE='\033[1;97m'     # Bright White
+RESET='\033[0m'        # Reset to Default
+CPU_EMOJI="💻"
+RAM_EMOJI="📈"
+STORAGE_EMOJI="📁"
+CONNECT_EMOJI="🔗"
+ERROR_EMOJI="⚠"
+ERROR_EMOJI_V2="❌"
+SUCCESS_EMOJI="✅"
+trap 'echo -e "\n\n${RED}${ERROR_EMOJI_V2} Exiting with status 1.${RESET}\n"; exit 1' SIGINT
+display_banner() {
+  clear
+  echo -e "${CYAN}"
+  figlet KVM-i7
+  echo -e "${WHITE}A Paid VPS Hosting Company with 4K+ Members (discord.gg/kvm)${RESET}"
+  echo
+  echo -e "${BLUE}Node Usage${RESET}"
+  echo -e " ${RAM_EMOJI}  RAM: ${WHITE}$ram_usage${RESET}"
+  echo -e " ${STORAGE_EMOJI}  Storage: ${WHITE}$storage_usage${RESET}"
+  echo -e " ${CPU_EMOJI}  CPU: ${WHITE}$cpu_usage${RESET}"
+  echo
+}
+get_ram_usage() {
+  total_ram=$(free -m | awk '/^Mem:/ {print $2}')
+  used_ram=$(free -m | awk '/^Mem:/ {print $3}')
+  if [ "$used_ram" -lt 1024 ]; then
+    echo "${used_ram}MB"
+  else
+    used_ram_gb=$(echo "scale=2; $used_ram/1024" | bc)
+    total_ram_gb=$(echo "scale=2; $total_ram/1024" | bc)
+    echo "${used_ram_gb}GB"
+  fi
+}
+get_cpu_usage() {
+  cpu_usage=$(top -b -n1 | grep "Cpu(s)" | awk '{print $2 + $4}')
+  printf "%.2f%% / CPU\n" "$cpu_usage"
+}
+get_storage_usage() {
+  total_storage=$(df -h --total | grep "total" | awk '{print $2}')
+  used_storage=$(df -h --total | grep "total" | awk '{print $3}')
+  usage_percentage=$(df -h --total | grep "total" | awk '{print $5}')
+  echo "${usage_percentage}"
+}
+ram_usage=$(get_ram_usage)
+cpu_usage=$(get_cpu_usage)
+storage_usage=$(get_storage_usage)
+display_banner
+while true; do
+  echo -e "\n┌──(enter@token)-[~] ${RESET}"
+  echo -ne "${RED}└─> ${RESET}"
+  token=""
+  while IFS= read -r -s -n 1 char; do
+    if [[ $char == $'\0' ]]; then
+      break
+    fi
+    if [[ $char == $'\177' ]]; then
+      if [[ -n "$token" ]]; then
+        token=${token::-1}
+        echo -ne "\b \b"
+      fi
+      continue
+    fi
+    token+="$char"
+    echo -n "*"
+  done
+  echo
+  if [[ -z "$token" ]]; then
+    echo -e "\n${RED}${ERROR_EMOJI_V2}  You must enter a valid token.${RESET}\n"
+    continue
+  fi
+  if ! grep -Fq "$token" tokens.txt; then
+    echo -e "\n${RED}${ERROR_EMOJI_V2}  Invalid token. Please try again.${RESET}\n"
+    continue
+  fi
+  vps_id=$(grep "$token" tokens.txt | cut -d ',' -f 2)
+  echo -e "\n${CYAN}${CONNECT_EMOJI}  Connecting to VPS...${RESET}"
+  echo
+  echo -e "${GREEN}${SUCCESS_EMOJI}  SSH session started successfully!${RESET}"
+  echo
+  echo -e "\033[1;32mWelcome to Your KVM-i7 VPS!\033[0m\n\n\
+\033[1;36mKey Features of Your High-Powered VPS:\033[0m\n\
+  - \033[1;34m1TBp DDOS Protection\033[0m\033[1;37m – No Chaos Allowed\033[0m\n\
+  - \033[1;34m1Gbp Internet\033[0m\033[1;37m – Speed to Outrun Your Existential Crisis\033[0m\n\
+  - \033[1;34mHigh-Performance\033[0m\033[1;37m – Smooth Like Your Best Decision\033[0m\n\n\
+\033[1;36mEssential Resources for the Tech-Savvy Adventurer:\033[0m\n\
+  - \033[1;34mOS Documentation:\033[0m   \033[1;37mhttps://help.ubuntu.com\033[0m\n\
+  - \033[1;34mServer Management:\033[0m  \033[1;37mhttps://landscape.canonical.com\033[0m\n\
+  - \033[1;34mVPS Support:\033[0m        \033[1;37mhttps://discord.gg/kvm\033[0m\n\n\
+\033[1;37mReminder:\033[0m \033[1;37mNo crypto mining on KVM-i7\033[0m\033[1;36m – \033[1;37munless you want your VPS to vanish faster than your hopes and dreams.\033[0m\n"
+if sudo docker exec -it $vps_id bash -c "cd ~ && /bin/bash"; then
+   {}
+  else
+    echo -e "${RED}${ERROR_EMOJI_V2} Failed to start SSH session. Check if VPS ID is valid.${RESET}"
+    echo
+  fi
+  clear
+  echo -e "${CYAN}${SUCCESS_EMOJI}  SSH session ended.${RESET}"
+  echo
+  break
+done
+exit 0
