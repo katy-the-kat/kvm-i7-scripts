@@ -1,14 +1,14 @@
 #!/bin/bash
 cd ~
 clear
-RED='\033[1;91m'       # Bright Red
-GREEN='\033[1;92m'     # Bright Green
-YELLOW='\033[1;93m'    # Bright Yellow
-BLUE='\033[1;94m'      # Bright Blue
-MAGENTA='\033[1;95m'   # Bright Magenta
-CYAN='\033[1;96m'      # Bright Cyan
-WHITE='\033[1;97m'     # Bright White
-RESET='\033[0m'        # Reset to Default
+RED='\033[1;91m'
+GREEN='\033[1;92m'
+YELLOW='\033[1;93m'
+BLUE='\033[1;94m'
+MAGENTA='\033[1;95m'
+CYAN='\033[1;96m'
+WHITE='\033[1;97m'
+RESET='\033[0m'
 CPU_EMOJI="💻"
 RAM_EMOJI="📈"
 STORAGE_EMOJI="📁"
@@ -17,6 +17,7 @@ ERROR_EMOJI="⚠"
 ERROR_EMOJI_V2="❌"
 SUCCESS_EMOJI="✅"
 trap 'echo -e "\n\n${RED}${ERROR_EMOJI_V2} Exiting with status 1.${RESET}\n"; exit 1' SIGINT
+
 display_banner() {
   clear
   echo -e "${CYAN}"
@@ -29,6 +30,7 @@ display_banner() {
   echo -e " ${CPU_EMOJI}  CPU: ${WHITE}$cpu_usage${RESET}"
   echo
 }
+
 get_ram_usage() {
   total_ram=$(free -m | awk '/^Mem:/ {print $2}')
   used_ram=$(free -m | awk '/^Mem:/ {print $3}')
@@ -40,20 +42,24 @@ get_ram_usage() {
     echo "${used_ram_gb}GB"
   fi
 }
+
 get_cpu_usage() {
   cpu_usage=$(top -b -n1 | grep "Cpu(s)" | awk '{print $2 + $4}')
   printf "%.2f%% / CPU\n" "$cpu_usage"
 }
+
 get_storage_usage() {
   total_storage=$(df -h --total | grep "total" | awk '{print $2}')
   used_storage=$(df -h --total | grep "total" | awk '{print $3}')
   usage_percentage=$(df -h --total | grep "total" | awk '{print $5}')
   echo "${usage_percentage}"
 }
+
 ram_usage=$(get_ram_usage)
 cpu_usage=$(get_cpu_usage)
 storage_usage=$(get_storage_usage)
 display_banner
+
 while true; do
   echo -e "\n┌──(enter@token)-[~] ${RESET}"
   echo -ne "${RED}└─> ${RESET}"
@@ -73,8 +79,8 @@ while true; do
     echo -n "*"
   done
   echo
-  if [[ -z "$token" ]]; then
-    echo -e "\n${RED}${ERROR_EMOJI_V2}  You must enter a valid token.${RESET}\n"
+  if [[ -z "$token" || ${#token} -lt 5 ]]; then
+    echo -e "\n${RED}${ERROR_EMOJI_V2}  You must enter a valid token (min 5 characters).${RESET}\n"
     continue
   fi
   if ! grep -Fq "$token" tokens.txt; then
@@ -96,10 +102,8 @@ while true; do
   - \033[1;34mServer Management:\033[0m  \033[1;37mhttps://landscape.canonical.com\033[0m\n\
   - \033[1;34mVPS Support:\033[0m        \033[1;37mhttps://discord.gg/kvm\033[0m\n\n\
 \033[1;37mReminder:\033[0m \033[1;37mNo crypto mining on KVM-i7\033[0m\033[1;36m – \033[1;37munless you want your VPS to vanish faster than your hopes and dreams.\033[0m\n"
-if sudo pct enter $vps_id; then
+  if sudo pct enter $vps_id; then
     {}
-#   echo -e "${GREEN}${SUCCESS_EMOJI}  SSH session started successfully!${RESET}"
-#    echo
   else
     echo -e "${RED}${ERROR_EMOJI_V2} Failed to start SSH session. Check if VPS ID is valid.${RESET}"
     echo
