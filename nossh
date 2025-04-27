@@ -22,7 +22,7 @@ display_banner() {
   clear
   echo -e "${CYAN}"
   figlet KVM-i7
-  echo -e "${WHITE}A Paid VPS Hosting Company with 4K+ Members (discord.gg/kvm)${RESET}"
+
   echo
   echo -e "${BLUE}Node Usage${RESET}"
   echo -e " ${RAM_EMOJI}  RAM: ${WHITE}$ram_usage${RESET}"
