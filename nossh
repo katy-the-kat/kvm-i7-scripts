@@ -100,7 +100,7 @@ while true; do
 \033[1;36mEssential Resources for the Tech-Savvy Adventurer:\033[0m\n\
   - \033[1;34mOS Documentation:\033[0m   \033[1;37mhttps://help.ubuntu.com\033[0m\n\
   - \033[1;34mServer Management:\033[0m  \033[1;37mhttps://landscape.canonical.com\033[0m\n\
-  - \033[1;34mVPS Support:\033[0m        \033[1;37mhttps://discord.gg/kvm\033[0m\n\n\
+  - \033[1;34mVPS Support:\033[0m        \033[1;37mhttps://discord.gg/t3vps\033[0m\n\n\
 \033[1;37mReminder:\033[0m \033[1;37mNo crypto mining on KVM-i7\033[0m\033[1;36m – \033[1;37munless you want your VPS to vanish faster than your hopes and dreams.\033[0m\n"
   if sudo pct enter $vps_id; then
     {}
